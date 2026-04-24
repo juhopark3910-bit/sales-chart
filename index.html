@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>거래처별 매출 현황</title>
+<title>2026년 강북구 거래처별 매출 현황</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -209,7 +209,7 @@
   .stat-chip.up span { color: var(--green); }
   .stat-chip.down span { color: var(--red); }
 
-  .chart-wrap { position: relative; height: 340px; }
+  .chart-wrap { position: relative; height: 500px; }
 
   .compare-legend {
     display: flex; flex-wrap: wrap; gap: 10px;
@@ -320,8 +320,8 @@ function buildUI() {
     <div class="header">
       <div class="header-left">
         <div class="header-badge"><span class="dot"></span> LIVE · 노션 연동</div>
-        <h1>거래처별 매출 현황</h1>
-        <p>2026년 · 거래처를 선택하면 월별 매출 추이를 확인할 수 있습니다</p>
+        <h1>2026년 강북구 거래처별 매출 현황</h1>
+        <p>거래처를 선택하면 월별 매출 추이를 확인할 수 있습니다</p>
       </div>
       <button class="refresh-btn" onclick="reloadData()" id="refreshBtn">
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
