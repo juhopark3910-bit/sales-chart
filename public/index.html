@@ -10,89 +10,118 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0a0a0f; --bg2: #111118; --surface: #16161f; --surface2: #1e1e2a;
-    --border: #2a2a3a; --border2: #333345; --text: #f0f0f5; --text2: #9090a8;
-    --text3: #555568; --accent: #6366f1; --accent2: #818cf8;
-    --accent-glow: rgba(99,102,241,0.25); --green: #34d399; --red: #f87171; --chip: #1e1e2a;
+    --bg: #0a0a0f; --surface: #16161f; --surface2: #1e1e2a;
+    --border: #2a2a3a; --border2: #333345;
+    --text: #f0f0f5; --text2: #9090a8; --text3: #555568;
+    --accent: #6366f1; --accent2: #818cf8; --accent-glow: rgba(99,102,241,0.2);
+    --green: #34d399; --red: #f87171; --blue: #60a5fa;
   }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 32px 24px 48px; overflow-x: hidden; }
-  body::before { content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; }
-  .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; }
-  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 12px; animation: fadeDown .5s ease both; }
-  .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--accent2); font-weight: 500; margin-bottom: 10px; }
-  .header-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-  .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.8px; background: linear-gradient(135deg, #f0f0f5 0%, #9090a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .header p { font-size: 13px; color: var(--text3); margin-top: 4px; }
-  .refresh-btn { display: flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 10px; border: 1px solid var(--border2); background: var(--surface); font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .2s; }
-  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); box-shadow: 0 0 16px var(--accent-glow); }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  body::before { content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(ellipse, rgba(99,102,241,0.1) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; position: relative; z-index: 1; }
+  .top-left { display: flex; align-items: center; gap: 12px; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 3px 10px; font-size: 11px; color: var(--accent2); font-weight: 500; }
+  .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  .top-title { font-size: 15px; font-weight: 700; letter-spacing: -0.4px; }
+  .refresh-btn { display: flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface); font-family: inherit; font-size: 11px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .2s; }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
   .refresh-btn.loading svg { animation: spin .7s linear infinite; }
   .refresh-btn.loading { opacity: .6; pointer-events: none; }
-  .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; }
-  .loader { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-  .loading-text { color: var(--text2); font-size: 14px; }
-  .loading-sub { color: var(--text3); font-size: 12px; margin-top: -8px; }
-  .error-state { text-align: center; padding: 48px 24px; background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.2); border-radius: 16px; color: var(--red); }
-  .meta-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 12px; color: var(--text3); animation: fadeUp .5s .3s ease both; }
-  .meta-bar .count { color: var(--text2); }
-  .meta-bar .count b { color: var(--accent2); }
-  .search-wrap { position: relative; margin-bottom: 14px; animation: fadeUp .5s .35s ease both; }
-  .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text3); }
-  #searchInput { width: 100%; padding: 11px 14px 11px 40px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-family: inherit; font-size: 14px; color: var(--text); outline: none; transition: all .2s; }
-  #searchInput:focus { border-color: var(--accent); background: var(--surface2); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  .main { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
+
+  .left-panel { width: 120px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 8px; gap: 5px; overflow: hidden; }
+  .panel-meta { font-size: 10px; color: var(--text3); }
+  .panel-meta b { color: var(--accent2); }
+  .search-wrap { position: relative; }
+  .search-wrap svg { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text3); }
+  #searchInput { width: 100%; padding: 5px 7px 5px 26px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); font-family: inherit; font-size: 10px; color: var(--text); outline: none; transition: all .2s; }
+  #searchInput:focus { border-color: var(--accent); }
   #searchInput::placeholder { color: var(--text3); }
-  .chip-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; max-height: 210px; overflow-y: auto; animation: fadeUp .5s .4s ease both; }
-  .chip-list::-webkit-scrollbar { width: 4px; }
-  .chip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-  .chip { padding: 6px 14px; border-radius: 20px; background: var(--chip); color: var(--text2); font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); transition: all .18s; white-space: nowrap; user-select: none; }
-  .chip:hover { border-color: var(--accent); color: var(--accent2); background: rgba(99,102,241,0.08); transform: translateY(-1px); }
-  .chip.active { background: linear-gradient(135deg, #6366f1, #818cf8); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(99,102,241,0.4); transform: translateY(-1px); }
-  .controls { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; animation: fadeUp .5s .45s ease both; }
-  .ctrl-btn { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .18s; }
+  .chip-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+  .chip-list::-webkit-scrollbar { width: 2px; }
+  .chip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  .chip { padding: 5px 7px; border-radius: 6px; font-size: 10px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: transparent; transition: all .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; }
+  .chip:hover { background: var(--surface2); color: var(--text); }
+  .chip.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
+  .ctrl-row { display: flex; gap: 3px; flex-shrink: 0; }
+  .ctrl-btn { flex: 1; padding: 4px; border-radius: 5px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 9px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .15s; text-align: center; }
   .ctrl-btn:hover { border-color: var(--accent); color: var(--accent2); }
-  .ctrl-btn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: var(--accent); }
+  .ctrl-btn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
   .ctrl-btn.danger:hover { border-color: var(--red); color: var(--red); }
-  .sel-count { font-size: 12px; color: var(--text3); margin-left: auto; }
-  .sel-count b { color: var(--accent2); }
-  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; position: relative; overflow: hidden; animation: fadeUp .45s ease both; transition: box-shadow .3s; }
-  .chart-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent); }
-  .chart-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--border2); }
-  .chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-  .chart-title { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; }
-  .chart-sub { font-size: 12px; color: var(--text3); margin-top: 3px; }
-  .stat-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 5px 12px; font-size: 12px; color: var(--text2); font-weight: 500; }
-  .stat-chip span { font-weight: 700; color: var(--text); }
-  .stat-chip.up span { color: var(--green); }
-  .stat-chip.down span { color: var(--red); }
-  .chart-wrap { position: relative; height: 500px; }
-  .compare-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; color: var(--text3); font-size: 14px; position: relative; overflow: hidden; }
-  .empty-state::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent); }
-  .empty-icon { font-size: 40px; margin-bottom: 4px; }
-  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .right-panel { flex: 1; display: flex; flex-direction: column; padding: 10px 14px; overflow: hidden; gap: 6px; }
+
+  .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--text3); font-size: 13px; }
+
+  .chart-title { font-size: 19px; font-weight: 700; letter-spacing: -0.5px; }
+  .chart-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; flex-shrink: 0; }
+  .sc { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
+  .sc-label { font-size: 9px; color: var(--text3); }
+  .sc-value { font-size: 11px; font-weight: 700; color: var(--text); margin-top: 1px; }
+  .sc.hi { border-color: rgba(248,113,113,0.3); }
+  .sc.hi .sc-label { color: var(--red); }
+  .sc.hi .sc-value { color: var(--red); }
+  .sc.lo { border-color: rgba(96,165,250,0.3); }
+  .sc.lo .sc-label { color: var(--blue); }
+  .sc.lo .sc-value { color: var(--blue); }
+  .sc.up .sc-value { color: var(--green); }
+  .sc.down .sc-value { color: var(--red); }
+  .sc.recent { border-color: rgba(99,102,241,0.3); }
+  .sc.recent .sc-label { color: var(--accent2); }
+  .sc.recent .sc-value { color: var(--accent2); }
+
+  .qrow { display: flex; gap: 4px; flex-shrink: 0; }
+  .qbtn { flex: 1; padding: 5px 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 10px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; transition: all .15s; }
+  .qbtn:hover { border-color: var(--accent); color: var(--accent2); }
+  .qbtn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
+  .qbtn .qamt { font-size: 9px; color: var(--text3); margin-top: 1px; }
+  .qbtn.active .qamt { color: var(--accent2); }
+
+  .chart-wrap { flex: 1; position: relative; min-height: 0; }
+
+  .compare-legend { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; padding-top: 6px; border-top: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .loading-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .loader { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  .loading-text { color: var(--text2); font-size: 13px; }
+
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div id="app">
-    <div class="loading-state">
-      <div class="loader"></div>
-      <div class="loading-text">데이터를 불러오는 중...</div>
-      <div class="loading-sub">노션에서 거래처 정보를 가져오고 있어요</div>
-    </div>
+
+<div class="top-bar">
+  <div class="top-left">
+    <div class="badge"><span class="dot"></span> LIVE · 노션 연동</div>
+    <span class="top-title">거래처별 매출 현황</span>
+  </div>
+  <button class="refresh-btn" onclick="reloadData()" id="refreshBtn">
+    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+    </svg>새로고침
+  </button>
+</div>
+
+<div class="main" id="mainArea">
+  <div class="loading-state">
+    <div class="loader"></div>
+    <div class="loading-text">노션에서 데이터를 불러오는 중...</div>
   </div>
 </div>
+
 <script>
 Chart.register(ChartDataLabels);
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const COLORS = ['#6366f1','#f87171','#34d399','#fbbf24','#a78bfa','#38bdf8','#fb7185','#4ade80','#fb923c','#818cf8','#f472b6','#2dd4bf','#facc15','#60a5fa','#c084fc'];
+
 let DATA = {}, mode = 'single', selected = [], chartInst = null;
 
 async function fetchData() {
@@ -101,50 +130,77 @@ async function fetchData() {
   return await res.json();
 }
 
+const fmt = n => n.toLocaleString('ko-KR') + '원';
+const fmtW = n => {
+  if(n >= 100000000) return (n/100000000).toFixed(1) + '억원';
+  if(n >= 10000) return Math.round(n/10000).toLocaleString('ko-KR') + '만원';
+  return n.toLocaleString('ko-KR') + '원';
+};
+const fmtWShort = n => {
+  if(n >= 100000000) return (n/100000000).toFixed(1) + '억';
+  if(n >= 10000) return Math.round(n/10000) + '만';
+  return n.toString();
+};
+
+function getStats(vals) {
+  const real = vals.map((v,i)=>({v,i})).filter(x=>x.v>0);
+  if(!real.length) return null;
+  const total = real.reduce((s,x)=>s+x.v,0);
+  const avg = Math.round(total/real.length);
+  const maxItem = real.reduce((a,b)=>a.v>b.v?a:b);
+  const minItem = real.reduce((a,b)=>a.v<b.v?a:b);
+  const last = real[real.length-1];
+  const prev = real.length>1 ? real[real.length-2] : null;
+  const trend = prev ? Math.round((last.v-prev.v)/prev.v*100) : null;
+  const quarters = [0,1,2,3].map(q => {
+    const qMonths = real.filter(x => Math.floor(x.i/3)===q);
+    if(!qMonths.length) return null;
+    return Math.round(qMonths.reduce((s,x)=>s+x.v,0)/qMonths.length);
+  });
+  return { avg, maxItem, minItem, last, trend, quarters };
+}
+
 function buildUI() {
   const names = Object.keys(DATA).sort((a,b) => a.localeCompare(b,'ko'));
   const now = new Date();
   const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-  document.getElementById('app').innerHTML = `
-    <div class="header">
-      <div>
-        <div class="header-badge"><span class="dot"></span> LIVE · 노션 연동</div>
-        <h1>거래처별 매출 현황</h1>
-        <p>2026년 · 거래처를 선택하면 월별 매출 추이를 확인할 수 있습니다</p>
+
+  document.getElementById('mainArea').innerHTML = `
+    <div class="left-panel">
+      <div class="panel-meta">총 <b>${names.length}</b>개 · ${timeStr}</div>
+      <div class="search-wrap">
+        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="검색..." oninput="filterChips()">
       </div>
-      <button class="refresh-btn" onclick="reloadData()" id="refreshBtn">
-        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-        </svg>새로고침
-      </button>
+      <div class="chip-list" id="chipList">
+        ${names.map(n => `<div class="chip" data-name="${n}" onclick="toggleChip('${n}')" title="${n}">${n}</div>`).join('')}
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-btn active" onclick="setMode('single')" id="btnSingle">단일</div>
+        <div class="ctrl-btn" onclick="setMode('compare')" id="btnCompare">비교</div>
+        <div class="ctrl-btn danger" onclick="clearAll()">초기화</div>
+      </div>
     </div>
-    <div class="meta-bar">
-      <span class="count">총 <b>${names.length}</b>개 거래처</span>
-      <span>마지막 업데이트 ${timeStr}</span>
-    </div>
-    <div class="search-wrap">
-      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="거래처명 검색..." oninput="filterChips()">
-    </div>
-    <div class="chip-list" id="chipList">
-      ${names.map(n => `<div class="chip" data-name="${n}" onclick="toggleChip('${n}')">${n}</div>`).join('')}
-    </div>
-    <div class="controls">
-      <button class="ctrl-btn active" onclick="setMode('single')" id="btnSingle">단일 선택</button>
-      <button class="ctrl-btn" onclick="setMode('compare')" id="btnCompare">비교 모드</button>
-      <button class="ctrl-btn danger" onclick="clearAll()">초기화</button>
-      <span class="sel-count" id="selCount"></span>
-    </div>
-    <div id="chartArea">
-      <div class="empty-state"><div class="empty-icon">📈</div>위에서 거래처를 선택해 주세요</div>
+    <div class="right-panel" id="rightPanel">
+      <div class="empty-state">
+        📈 왼쪽에서 거래처를 선택해 주세요
+      </div>
     </div>`;
 }
 
 async function reloadData() {
   const btn = document.getElementById('refreshBtn');
   if(btn) btn.classList.add('loading');
-  try { DATA = await fetchData(); selected = selected.filter(n => DATA[n]); buildUI(); updateChipStates(); if(selected.length) renderChart(); }
-  catch(e) { if(btn) btn.classList.remove('loading'); alert('불러오기 실패: ' + e.message); }
+  try {
+    DATA = await fetchData();
+    selected = selected.filter(n => DATA[n]);
+    buildUI();
+    updateChipStates();
+    if(selected.length) renderChart();
+  } catch(e) {
+    if(btn) btn.classList.remove('loading');
+    alert('불러오기 실패: ' + e.message);
+  }
 }
 
 function filterChips() {
@@ -169,91 +225,161 @@ function toggleChip(name) {
 
 function updateChipStates() {
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', selected.includes(c.dataset.name)));
-  const cnt = document.getElementById('selCount');
-  if(cnt) cnt.innerHTML = selected.length ? `<b>${selected.length}</b>개 선택됨` : '';
-}
-
-const fmt = n => n.toLocaleString('ko-KR');
-const fmtS = n => n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(0)+'K':n.toString();
-
-function getStats(vals) {
-  const real = vals.map((v,i)=>({v,i})).filter(x=>x.v>0);
-  if(!real.length) return null;
-  const total=real.reduce((s,x)=>s+x.v,0), avg=Math.round(total/real.length);
-  const maxItem=real.reduce((a,b)=>a.v>b.v?a:b);
-  const last=real[real.length-1].v, prev=real.length>1?real[real.length-2].v:null;
-  const trend=prev?Math.round((last-prev)/prev*100):null;
-  return {total,avg,max:maxItem.v,maxIdx:maxItem.i,trend};
 }
 
 function renderChart() {
-  const area = document.getElementById('chartArea');
+  const panel = document.getElementById('rightPanel');
+  if(!panel) return;
+
   if(!selected.length) {
     if(chartInst){chartInst.destroy();chartInst=null;}
-    area.innerHTML=`<div class="empty-state"><div class="empty-icon">📈</div>위에서 거래처를 선택해 주세요</div>`;
+    panel.innerHTML=`<div class="empty-state">📈 왼쪽에서 거래처를 선택해 주세요</div>`;
     return;
   }
+
   const isSingle = selected.length===1;
   const stats = isSingle ? getStats(DATA[selected[0]]) : null;
-  let statsHTML='';
-  if(isSingle&&stats){
-    const tc=stats.trend>0?'up':stats.trend<0?'down':'';
-    const tt=stats.trend!==null?(stats.trend>0?`▲${stats.trend}%`:`▼${Math.abs(stats.trend)}%`):'-';
-    statsHTML=`<div class="stat-chips">
-      <div class="stat-chip">누계 <span>${fmtS(stats.total)}</span></div>
-      <div class="stat-chip">월평균 <span>${fmtS(stats.avg)}</span></div>
-      <div class="stat-chip">최고 <span>${MONTHS[stats.maxIdx]} ${fmtS(stats.max)}</span></div>
-      <div class="stat-chip ${tc}">전월比 <span>${tt}</span></div>
+
+  let statsHTML = '', qrowHTML = '';
+  if(isSingle && stats) {
+    const trendCls = stats.trend>0?'up':stats.trend<0?'down':'';
+    const trendTxt = stats.trend!==null?(stats.trend>0?`▲${stats.trend}%`:`▼${Math.abs(stats.trend)}%`):'-';
+    statsHTML = `<div class="stats">
+      <div class="sc"><div class="sc-label">월평균 매출</div><div class="sc-value">${fmtW(stats.avg)}</div></div>
+      <div class="sc hi"><div class="sc-label">최고매출</div><div class="sc-value">${MONTHS[stats.maxItem.i]} ${fmtW(stats.maxItem.v)}</div></div>
+      <div class="sc lo"><div class="sc-label">최저매출</div><div class="sc-value">${MONTHS[stats.minItem.i]} ${fmtW(stats.minItem.v)}</div></div>
+      <div class="sc ${trendCls}"><div class="sc-label">전월比</div><div class="sc-value">${trendTxt}</div></div>
+      <div class="sc recent"><div class="sc-label">최근 매출 현황</div><div class="sc-value">${MONTHS[stats.last.i]} ${fmtW(stats.last.v)}</div></div>
+    </div>`;
+    qrowHTML = `<div class="qrow" id="qrow">
+      ${stats.quarters.map((q,i) => `
+        <div class="qbtn${i===0?' active':''}" data-q="${i}" onclick="selectQ(this)">
+          ${i+1}분기<div class="qamt">${q!==null?'평균 '+fmtW(q):'데이터 없음'}</div>
+        </div>`).join('')}
     </div>`;
   }
-  const legendHTML=!isSingle?`<div class="compare-legend">${selected.map((n,i)=>`
-    <div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${n}</div>`).join('')}</div>`:'';
-  area.innerHTML=`<div class="chart-card">
-    <div class="chart-header">
-      <div><div class="chart-title">${isSingle?selected[0]:'거래처 비교'}</div>
-      <div class="chart-sub">${isSingle?'월별 매출 추이':selected.length+'개 거래처 비교'}</div></div>
-      ${statsHTML}
+
+  const legendHTML = !isSingle ? `<div class="compare-legend">${selected.map((n,i)=>`
+    <div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${n}</div>`).join('')}</div>` : '';
+
+  panel.innerHTML = `
+    <div style="animation:fadeIn .3s ease">
+      <div class="chart-title">${isSingle ? selected[0] : '거래처 비교'}</div>
+      <div class="chart-sub">${isSingle ? '월별 매출 추이' : selected.length+'개 거래처 비교'}</div>
     </div>
+    ${statsHTML}
+    ${qrowHTML}
     <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
-    ${legendHTML}
-  </div>`;
+    ${legendHTML}`;
+
   if(chartInst){chartInst.destroy();}
-  const ctx=document.getElementById('mainChart').getContext('2d');
-  const datasets=selected.map((n,i)=>{
-    const color=COLORS[i%COLORS.length];
-    const plotData=DATA[n].map(v=>v>0?v:null);
+  const ctx = document.getElementById('mainChart').getContext('2d');
+
+  const datasets = selected.map((n,i) => {
+    const color = COLORS[i%COLORS.length];
+    const d = DATA[n];
+    const plotData = d.map(v => v>0 ? v : null);
+    const st = getStats(d);
     return {
-      label:n, data:plotData, borderColor:color,
-      backgroundColor:isSingle?ctx2=>{const g=ctx2.chart.ctx.createLinearGradient(0,0,0,ctx2.chart.height);g.addColorStop(0,color+'55');g.addColorStop(1,color+'00');return g;}:color+'18',
-      borderWidth:2.5, pointBackgroundColor:color, pointBorderColor:'#0a0a0f', pointBorderWidth:2,
-      pointRadius:plotData.map(v=>v!==null?6:0), pointHoverRadius:9, tension:0.4, fill:isSingle, spanGaps:false,
-      datalabels:{display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null, align:'top', anchor:'end', offset:5, color:color,
-        font:{family:'Noto Sans KR',size:isSingle?12:10,weight:'700'}, formatter:v=>v!==null?fmtS(v):'',
-        backgroundColor:'rgba(10,10,15,0.75)', borderColor:color+'60', borderWidth:1, borderRadius:5, padding:{top:3,bottom:3,left:6,right:6}}
+      label: n, data: plotData,
+      borderColor: color,
+      backgroundColor: isSingle ? ctx2 => {
+        const g = ctx2.chart.ctx.createLinearGradient(0,0,0,ctx2.chart.height);
+        g.addColorStop(0, color+'40'); g.addColorStop(1, color+'00'); return g;
+      } : color+'18',
+      borderWidth: 2.5,
+      pointBackgroundColor: plotData.map((v,idx) => {
+        if(v===null) return color;
+        if(isSingle && st) {
+          if(idx===st.maxItem.i) return '#f87171';
+          if(idx===st.minItem.i) return '#60a5fa';
+        }
+        return color;
+      }),
+      pointBorderColor: '#0a0a0f', pointBorderWidth: 2,
+      pointRadius: plotData.map(v => v!==null ? 5 : 0),
+      pointHoverRadius: 8, tension: 0.4, fill: isSingle, spanGaps: false,
+      datalabels: {
+        display: ctx => ctx.dataset.data[ctx.dataIndex] !== null,
+        align: 'top', anchor: 'end', offset: 4,
+        color: (ctx) => {
+          if(!isSingle || !st) return color;
+          const idx = ctx.dataIndex;
+          if(idx===st.maxItem.i) return '#f87171';
+          if(idx===st.minItem.i) return '#60a5fa';
+          return color;
+        },
+        font: {family:'Noto Sans KR', size: isSingle?11:9, weight:'700'},
+        formatter: v => v!==null ? fmtWShort(v)+'만' : '',
+        backgroundColor: 'rgba(10,10,15,0.82)',
+        borderColor: ctx => {
+          if(!isSingle || !st) return color+'50';
+          const idx = ctx.dataIndex;
+          if(idx===st.maxItem.i) return '#f8717150';
+          if(idx===st.minItem.i) return '#60a5fa50';
+          return color+'50';
+        },
+        borderWidth: 1, borderRadius: 4,
+        padding: {top:2,bottom:2,left:5,right:5},
+      }
     };
   });
-  chartInst=new Chart(ctx,{type:'line',data:{labels:MONTHS,datasets},options:{
-    responsive:true, maintainAspectRatio:false,
-    animation:{duration:800,easing:'easeInOutQuart'},
-    layout:{padding:{top:40,left:8,right:8,bottom:4}},
-    plugins:{legend:{display:false},datalabels:{},
-      tooltip:{backgroundColor:'#1e1e2a',titleColor:'#9090a8',bodyColor:'#f0f0f5',borderColor:'#2a2a3a',borderWidth:1,padding:12,cornerRadius:10,
-        callbacks:{title:items=>items[0].label, label:item=>{const v=item.raw;if(v===null||v===undefined)return ` ${item.dataset.label}: 미입력`;return ` ${item.dataset.label}: ${fmt(v)}원`;}}}},
-    scales:{
-      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{font:{family:'Noto Sans KR',size:12},color:'#555568',autoSkip:false,maxRotation:0}},
-      y:{grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true,ticks:{font:{family:'Noto Sans KR',size:11},color:'#555568',callback:v=>v>=1000000?(v/1000000).toFixed(0)+'M':v>=1000?(v/1000).toFixed(0)+'K':v}}
-    },
-    interaction:{mode:'index',intersect:false},
-  }});
+
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: { labels: MONTHS, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 600, easing: 'easeInOutQuart' },
+      layout: { padding: { top: 32, left: 4, right: 4, bottom: 2 } },
+      plugins: {
+        legend: { display: false },
+        datalabels: {},
+        tooltip: {
+          backgroundColor: '#1e1e2a', titleColor: '#9090a8', bodyColor: '#f0f0f5',
+          borderColor: '#2a2a3a', borderWidth: 1, padding: 10, cornerRadius: 8,
+          callbacks: {
+            title: items => items[0].label,
+            label: item => {
+              const v = item.raw;
+              if(v===null||v===undefined) return ` ${item.dataset.label}: 미입력`;
+              return ` ${item.dataset.label}: ${fmt(v)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { font: {family:'Noto Sans KR',size:10}, color:'#555568', autoSkip:false, maxRotation:0 }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true,
+          ticks: {
+            font: {family:'Noto Sans KR',size:9}, color:'#555568',
+            callback: v => v>=10000 ? Math.round(v/10000).toLocaleString()+'만' : v.toLocaleString()
+          }
+        }
+      },
+      interaction: { mode: 'index', intersect: false },
+    }
+  });
 }
 
-(async()=>{
-  try { DATA=await fetchData(); buildUI(); }
+function selectQ(el) {
+  document.querySelectorAll('.qbtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+(async () => {
+  try { DATA = await fetchData(); buildUI(); }
   catch(e) {
-    document.getElementById('app').innerHTML=`
-      <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
-        <div class="error-state">❌ 데이터 불러오기 실패<br><br><small style="color:rgba(248,113,113,0.7)">${e.message}</small><br><br>
-          <button onclick="location.reload()" style="margin-top:12px;padding:9px 20px;border-radius:8px;border:1px solid rgba(248,113,113,0.4);background:rgba(248,113,113,0.1);color:#f87171;cursor:pointer;font-family:inherit;font-size:13px;">다시 시도</button>
+    document.getElementById('mainArea').innerHTML = `
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%">
+        <div style="text-align:center;padding:40px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-radius:12px;color:#f87171;">
+          ❌ 데이터 불러오기 실패<br><br>
+          <small style="color:rgba(248,113,113,0.7)">${e.message}</small><br><br>
+          <button onclick="location.reload()" style="margin-top:10px;padding:8px 18px;border-radius:8px;border:1px solid rgba(248,113,113,0.4);background:rgba(248,113,113,0.1);color:#f87171;cursor:pointer;font-family:inherit;">다시 시도</button>
         </div>
       </div>`;
   }
