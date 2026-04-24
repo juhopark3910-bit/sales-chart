@@ -9,186 +9,373 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #f7f6f3;
-    --surface: #ffffff;
-    --border: #e8e6e0;
-    --text-primary: #1a1916;
-    --text-secondary: #6b6860;
-    --text-muted: #a8a59e;
-    --accent: #2563eb;
-    --up: #16a34a;
-    --down: #dc2626;
-    --chip-bg: #f0ede8;
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --surface: #16161f;
+    --surface2: #1e1e2a;
+    --border: #2a2a3a;
+    --border2: #333345;
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --text3: #555568;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --accent-glow: rgba(99,102,241,0.25);
+    --green: #34d399;
+    --red: #f87171;
+    --chip: #1e1e2a;
   }
+
+  html { scroll-behavior: smooth; }
+
   body {
     font-family: 'Noto Sans KR', sans-serif;
     background: var(--bg);
-    color: var(--text-primary);
+    color: var(--text);
     min-height: 100vh;
-    padding: 24px 20px;
+    padding: 32px 24px 48px;
+    overflow-x: hidden;
   }
-  .header { margin-bottom: 20px; }
-  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-  .header p { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
 
-  .search-wrap { position: relative; margin-bottom: 12px; }
-  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+  /* 배경 글로우 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; }
+
+  /* 헤더 */
+  .header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+    animation: fadeDown .5s ease both;
+  }
+  .header-left {}
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--accent2);
+    font-weight: 500; margin-bottom: 10px;
+    animation: fadeDown .5s .1s ease both;
+  }
+  .header-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  .header h1 {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.8px;
+    background: linear-gradient(135deg, #f0f0f5 0%, #9090a8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .header p { font-size: 13px; color: var(--text3); margin-top: 4px; }
+
+  .refresh-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: 10px;
+    border: 1px solid var(--border2); background: var(--surface);
+    font-family: inherit; font-size: 12px; font-weight: 500;
+    color: var(--text2); cursor: pointer; transition: all .2s;
+    animation: fadeDown .5s .2s ease both;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); box-shadow: 0 0 16px var(--accent-glow); }
+  .refresh-btn.loading svg { animation: spin .7s linear infinite; }
+  .refresh-btn.loading { opacity: .6; pointer-events: none; }
+
+  /* 로딩 */
+  .loading-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 60vh; gap: 16px; animation: fadeIn .4s ease;
+  }
+  .loader {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  .loading-text { color: var(--text2); font-size: 14px; }
+  .loading-sub { color: var(--text3); font-size: 12px; margin-top: -8px; }
+
+  /* 에러 */
+  .error-state {
+    text-align: center; padding: 48px 24px;
+    background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 16px; color: var(--red);
+    animation: fadeIn .4s ease;
+  }
+
+  /* 업데이트 바 */
+  .meta-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; font-size: 12px; color: var(--text3);
+    animation: fadeUp .5s .3s ease both;
+  }
+  .meta-bar .count { color: var(--text2); }
+  .meta-bar .count b { color: var(--accent2); }
+
+  /* 검색 */
+  .search-wrap {
+    position: relative; margin-bottom: 14px;
+    animation: fadeUp .5s .35s ease both;
+  }
+  .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text3); }
   #searchInput {
-    width: 100%; padding: 10px 12px 10px 36px;
-    border: 1px solid var(--border); border-radius: 8px;
+    width: 100%; padding: 11px 14px 11px 40px;
+    border: 1px solid var(--border); border-radius: 10px;
     background: var(--surface); font-family: inherit;
-    font-size: 14px; color: var(--text-primary); outline: none; transition: border-color .15s;
+    font-size: 14px; color: var(--text); outline: none; transition: all .2s;
   }
-  #searchInput:focus { border-color: var(--accent); }
-  #searchInput::placeholder { color: var(--text-muted); }
+  #searchInput:focus { border-color: var(--accent); background: var(--surface2); box-shadow: 0 0 0 3px var(--accent-glow); }
+  #searchInput::placeholder { color: var(--text3); }
 
+  /* 칩 */
   .chip-list {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 16px; max-height: 200px; overflow-y: auto;
+    display: flex; flex-wrap: wrap; gap: 7px;
+    margin-bottom: 18px; max-height: 210px; overflow-y: auto;
+    animation: fadeUp .5s .4s ease both;
   }
+  .chip-list::-webkit-scrollbar { width: 4px; }
+  .chip-list::-webkit-scrollbar-track { background: transparent; }
+  .chip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
   .chip {
-    padding: 5px 12px; border-radius: 20px;
-    background: var(--chip-bg); color: var(--text-secondary);
+    padding: 6px 14px; border-radius: 20px;
+    background: var(--chip); color: var(--text2);
     font-size: 12px; font-weight: 500; cursor: pointer;
-    border: 1.5px solid transparent; transition: all .15s;
+    border: 1px solid var(--border); transition: all .18s;
     white-space: nowrap; user-select: none;
   }
-  .chip:hover { border-color: var(--accent); color: var(--accent); }
-  .chip.active { background: #1a1916; color: #fff; border-color: #1a1916; }
+  .chip:hover { border-color: var(--accent); color: var(--accent2); background: rgba(99,102,241,0.08); transform: translateY(-1px); }
+  .chip.active {
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    color: #fff; border-color: transparent;
+    box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+    transform: translateY(-1px);
+  }
 
-  .controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  /* 컨트롤 */
+  .controls {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    flex-wrap: wrap; align-items: center;
+    animation: fadeUp .5s .45s ease both;
+  }
   .ctrl-btn {
-    padding: 6px 14px; border-radius: 6px;
+    padding: 7px 16px; border-radius: 8px;
     border: 1px solid var(--border); background: var(--surface);
     font-family: inherit; font-size: 12px; font-weight: 500;
-    color: var(--text-secondary); cursor: pointer; transition: all .15s;
+    color: var(--text2); cursor: pointer; transition: all .18s;
   }
-  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .ctrl-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .sel-count { font-size: 12px; color: var(--text-muted); margin-left: auto; }
-  .sel-count b { color: var(--accent); }
+  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .ctrl-btn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: var(--accent); }
+  .ctrl-btn.danger:hover { border-color: var(--red); color: var(--red); }
+  .sel-count { font-size: 12px; color: var(--text3); margin-left: auto; }
+  .sel-count b { color: var(--accent2); }
 
+  /* 차트 카드 */
   .chart-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px; margin-bottom: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp .45s ease both;
+    transition: box-shadow .3s;
   }
-  .chart-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  .chart-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);
   }
-  .chart-title { font-size: 16px; font-weight: 700; }
-  .chart-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .chart-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--border2); }
+
+  .chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .chart-title { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; }
+  .chart-sub { font-size: 12px; color: var(--text3); margin-top: 3px; }
+
   .stat-chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .stat-chip {
-    background: var(--chip-bg); border-radius: 6px;
-    padding: 4px 10px; font-size: 12px; color: var(--text-secondary); font-weight: 500;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 12px; color: var(--text2); font-weight: 500;
   }
-  .stat-chip span { font-weight: 700; color: var(--text-primary); }
-  .stat-chip.up span { color: var(--up); }
-  .stat-chip.down span { color: var(--down); }
-  /* 라벨이 잘리지 않도록 차트 상단 여백 충분히 확보 */
+  .stat-chip span { font-weight: 700; color: var(--text); }
+  .stat-chip.up span { color: var(--green); }
+  .stat-chip.down span { color: var(--red); }
+
   .chart-wrap { position: relative; height: 340px; }
+
   .compare-legend {
     display: flex; flex-wrap: wrap; gap: 10px;
-    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
   }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text2); }
   .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
-  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* 빈 상태 */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 280px; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    color: var(--text3); font-size: 14px;
+    animation: fadeIn .3s ease;
+    position: relative; overflow: hidden;
+  }
+  .empty-state::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+  }
+  .empty-icon { font-size: 40px; filter: grayscale(0.3); margin-bottom: 4px; }
+
+  /* 애니메이션 */
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>거래처별 매출 현황</h1>
-  <p>2026년 · 거래처를 선택하면 월별 매출 추이를 확인할 수 있습니다</p>
-</div>
-
-<div class="search-wrap">
-  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-  </svg>
-  <input type="text" id="searchInput" placeholder="거래처명 검색..." oninput="filterChips()">
-</div>
-
-<div class="chip-list" id="chipList"></div>
-
-<div class="controls">
-  <button class="ctrl-btn active" onclick="setMode('single')" id="btnSingle">단일 선택</button>
-  <button class="ctrl-btn" onclick="setMode('compare')" id="btnCompare">비교 모드</button>
-  <button class="ctrl-btn" onclick="clearAll()">초기화</button>
-  <span class="sel-count" id="selCount"></span>
-</div>
-
-<div id="chartArea">
-  <div class="empty-state">
-    <div class="icon">📈</div>
-    위에서 거래처를 선택해 주세요
+<div class="wrap">
+  <div id="app">
+    <div class="loading-state">
+      <div class="loader"></div>
+      <div class="loading-text">데이터를 불러오는 중...</div>
+      <div class="loading-sub">노션에서 거래처 정보를 가져오고 있어요</div>
+    </div>
   </div>
 </div>
 
 <script>
 Chart.register(ChartDataLabels);
 
+const NOTION_API_KEY = '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';
+const DATABASE_ID = '34b2551e4b4b8016b8c1e89fa0e9ceb9';
+const PROXY = 'https://corsproxy.io/?';
+
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-
-const DATA = {
-  "강남의원":              [535497,465300,619523,0,0,0,0,0,0,0,0,0],
-  "강북삼성의원":          [803082,602069,499471,0,0,0,0,0,0,0,0,0],
-  "강북서울이비인후과의원": [2119062,1809367,2059012,0,0,0,0,0,0,0,0,0],
-  "김영재내과의원":        [14623490,13188950,15525518,0,0,0,0,0,0,0,0,0],
-  "내일내과의원(강북)":    [2749650,2703137,1844686,0,0,0,0,0,0,0,0,0],
-  "늘푸른연세의원":        [1412262,553796,1152495,0,0,0,0,0,0,0,0,0],
-  "동서제일의원":          [2472729,1952365,2097346,0,0,0,0,0,0,0,0,0],
-  "맑은하늘마취통증의학과": [94882,147093,159201,0,0,0,0,0,0,0,0,0],
-  "배용표내과":            [450002,852379,870479,0,0,0,0,0,0,0,0,0],
-  "북부성모의원(임)":      [1540925,2196574,2027772,0,0,0,0,0,0,0,0,0],
-  "서울더블유W내과의원":   [2118224,1457702,1500000,0,0,0,0,0,0,0,0,0],
-  "서울류내과의원":        [2972806,3131649,2967983,0,0,0,0,0,0,0,0,0],
-  "서울바른내과의원":      [1819719,1828580,1743054,0,0,0,0,0,0,0,0,0],
-  "서울봄연합의원":        [7257019,6492119,6031703,0,0,0,0,0,0,0,0,0],
-  "서울에이치내과의원":    [948703,1070946,1062238,0,0,0,0,0,0,0,0,0],
-  "서울연세튼튼의원":      [492227,441232,1007970,0,0,0,0,0,0,0,0,0],
-  "서울우리내과의원":      [14091864,13303853,12510482,0,0,0,0,0,0,0,0,0],
-  "성모더원신경외과의원":  [0,53149,127118,0,0,0,0,0,0,0,0,0],
-  "송림외과의원":          [3665074,4681950,3538594,0,0,0,0,0,0,0,0,0],
-  "수민의원":              [477259,597592,547836,0,0,0,0,0,0,0,0,0],
-  "수안과의원":            [534486,820534,773902,0,0,0,0,0,0,0,0,0],
-  "수유탑내과의원":        [2923247,2653755,2983346,0,0,0,0,0,0,0,0,0],
-  "스마일내과의원":        [7799199,6143859,7286220,0,0,0,0,0,0,0,0,0],
-  "심외과":                [332593,446273,516241,0,0,0,0,0,0,0,0,0],
-  "엠에스아산내과의원":    [3008445,2294861,3211842,0,0,0,0,0,0,0,0,0],
-  "연세백세내과의원":      [5650091,5855943,5339521,0,0,0,0,0,0,0,0,0],
-  "연진내과의원":          [570099,591013,572645,0,0,0,0,0,0,0,0,0],
-  "예일소아과의원":        [1736451,1481910,1528200,0,0,0,0,0,0,0,0,0],
-  "우리베스트내과의원":    [1130438,743051,1628468,0,0,0,0,0,0,0,0,0],
-  "우이한솔의원":          [9725165,9226341,8473803,0,0,0,0,0,0,0,0,0],
-  "이광언내과의원":        [1077333,953073,864502,0,0,0,0,0,0,0,0,0],
-  "이창훈신경과의원":      [6782427,5855428,5971198,0,0,0,0,0,0,0,0,0],
-  "자애내과외과의원":      [4143574,3662579,3740599,0,0,0,0,0,0,0,0,0],
-  "차성수의원":            [1459978,1106752,1852252,0,0,0,0,0,0,0,0,0],
-  "참조은의원":            [4089705,4178415,4178415,0,0,0,0,0,0,0,0,0],
-  "최윤영내과의원":        [1334759,1058274,1871839,0,0,0,0,0,0,0,0,0],
-  "한걸음가정의학과의원":  [1881709,1890457,2053568,0,0,0,0,0,0,0,0,0],
-  "한마음의원":            [1156032,935814,1219804,0,0,0,0,0,0,0,0,0],
-  "한사랑의원":            [2386920,2589308,2386562,0,0,0,0,0,0,0,0,0],
-  "현의원":                [4090261,4230714,4918443,0,0,0,0,0,0,0,0,0],
-};
-
+const MONTH_KEYS = ['26년 1월','26년 2월','26년 3월','26년 4월','26년 5월','26년 6월','26년 7월','26년 8월','26년 9월','26년 10월','26년 11월','26년 12월'];
 const COLORS = [
-  '#2563eb','#dc2626','#16a34a','#d97706','#7c3aed',
-  '#0891b2','#be185d','#065f46','#92400e','#1e3a8a',
-  '#991b1b','#3730a3','#166534','#78350f','#0369a1',
+  '#6366f1','#f87171','#34d399','#fbbf24','#a78bfa',
+  '#38bdf8','#fb7185','#4ade80','#fb923c','#818cf8',
+  '#f472b6','#2dd4bf','#facc15','#60a5fa','#c084fc',
 ];
 
-const names = Object.keys(DATA);
-let mode = 'single', selected = [], chartInst = null;
+let DATA = {}, mode = 'single', selected = [], chartInst = null;
 
-function buildChips() {
-  document.getElementById('chipList').innerHTML =
-    names.map(n => `<div class="chip" data-name="${n}" onclick="toggleChip('${n}')">${n}</div>`).join('');
+async function fetchNotionData() {
+  const url = `${PROXY}${encodeURIComponent(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`)}`;
+  let allResults = [], hasMore = true, startCursor;
+  while(hasMore) {
+    const body = { page_size: 100 };
+    if(startCursor) body.start_cursor = startCursor;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if(!res.ok) throw new Error(`API 오류: ${res.status}`);
+    const data = await res.json();
+    allResults = allResults.concat(data.results);
+    hasMore = data.has_more; startCursor = data.next_cursor;
+  }
+  const parsed = {};
+  for(const page of allResults) {
+    const props = page.properties;
+    const nameArr = props['거래처명']?.title || props['Name']?.title || [];
+    const name = nameArr.map(t => t.plain_text).join('').trim();
+    if(!name) continue;
+    parsed[name] = MONTH_KEYS.map(key => {
+      const prop = props[key];
+      if(!prop) return 0;
+      if(prop.type === 'number') return prop.number || 0;
+      if(prop.type === 'rich_text') {
+        const txt = prop.rich_text?.map(t => t.plain_text).join('').replace(/,/g,'').trim();
+        return (txt === '-' || txt === '') ? 0 : parseInt(txt) || 0;
+      }
+      return 0;
+    });
+  }
+  return parsed;
+}
+
+function buildUI() {
+  const names = Object.keys(DATA).sort((a,b) => a.localeCompare(b,'ko'));
+  const now = new Date();
+  const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  document.getElementById('app').innerHTML = `
+    <div class="header">
+      <div class="header-left">
+        <div class="header-badge"><span class="dot"></span> LIVE · 노션 연동</div>
+        <h1>거래처별 매출 현황</h1>
+        <p>2026년 · 거래처를 선택하면 월별 매출 추이를 확인할 수 있습니다</p>
+      </div>
+      <button class="refresh-btn" onclick="reloadData()" id="refreshBtn">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+        새로고침
+      </button>
+    </div>
+
+    <div class="meta-bar">
+      <span class="count">총 <b>${names.length}</b>개 거래처</span>
+      <span>마지막 업데이트 ${timeStr}</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="거래처명 검색..." oninput="filterChips()">
+    </div>
+
+    <div class="chip-list" id="chipList">
+      ${names.map(n => `<div class="chip" data-name="${n}" onclick="toggleChip('${n}')">${n}</div>`).join('')}
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn active" onclick="setMode('single')" id="btnSingle">단일 선택</button>
+      <button class="ctrl-btn" onclick="setMode('compare')" id="btnCompare">비교 모드</button>
+      <button class="ctrl-btn danger" onclick="clearAll()">초기화</button>
+      <span class="sel-count" id="selCount"></span>
+    </div>
+
+    <div id="chartArea">
+      <div class="empty-state">
+        <div class="empty-icon">📈</div>
+        위에서 거래처를 선택해 주세요
+      </div>
+    </div>
+  `;
+}
+
+async function reloadData() {
+  const btn = document.getElementById('refreshBtn');
+  if(btn) btn.classList.add('loading');
+  try {
+    DATA = await fetchNotionData();
+    selected = selected.filter(n => DATA[n]);
+    buildUI();
+    updateChipStates();
+    if(selected.length) renderChart();
+  } catch(e) {
+    if(btn) btn.classList.remove('loading');
+    alert('불러오기 실패: ' + e.message);
+  }
 }
 
 function filterChips() {
@@ -202,178 +389,166 @@ function setMode(m) {
   mode = m;
   document.getElementById('btnSingle').classList.toggle('active', m==='single');
   document.getElementById('btnCompare').classList.toggle('active', m==='compare');
-  if(m==='single' && selected.length > 1) { selected = [selected[0]]; updateChipStates(); renderChart(); }
+  if(m==='single' && selected.length > 1) { selected=[selected[0]]; updateChipStates(); renderChart(); }
 }
 
-function clearAll() { selected = []; updateChipStates(); renderChart(); }
+function clearAll() { selected=[]; updateChipStates(); renderChart(); }
 
 function toggleChip(name) {
-  if(mode === 'single') {
-    selected = selected[0] === name ? [] : [name];
-  } else {
-    const idx = selected.indexOf(name);
-    if(idx >= 0) selected.splice(idx, 1);
-    else if(selected.length < 8) selected.push(name);
-  }
-  updateChipStates();
-  renderChart();
+  if(mode==='single') { selected = selected[0]===name ? [] : [name]; }
+  else { const i=selected.indexOf(name); if(i>=0) selected.splice(i,1); else if(selected.length<8) selected.push(name); }
+  updateChipStates(); renderChart();
 }
 
 function updateChipStates() {
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', selected.includes(c.dataset.name)));
   const cnt = document.getElementById('selCount');
-  cnt.innerHTML = selected.length ? `<b>${selected.length}</b>개 선택됨` : '';
+  if(cnt) cnt.innerHTML = selected.length ? `<b>${selected.length}</b>개 선택됨` : '';
 }
 
 const fmt = n => n.toLocaleString('ko-KR');
-const fmtShort = n => {
-  if(n >= 1000000) return (n/1000000).toFixed(1) + 'M';
-  if(n >= 1000) return (n/1000).toFixed(0) + 'K';
-  return n.toString();
-};
+const fmtS = n => n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(0)+'K':n.toString();
 
 function getStats(vals) {
   const real = vals.map((v,i)=>({v,i})).filter(x=>x.v>0);
   if(!real.length) return null;
-  const total = real.reduce((s,x)=>s+x.v,0);
-  const avg = Math.round(total/real.length);
-  const maxItem = real.reduce((a,b)=>a.v>b.v?a:b);
-  const last = real[real.length-1].v;
-  const prev = real.length > 1 ? real[real.length-2].v : null;
-  const trend = prev ? Math.round((last-prev)/prev*100) : null;
-  return { total, avg, max: maxItem.v, maxIdx: maxItem.i, trend };
+  const total=real.reduce((s,x)=>s+x.v,0), avg=Math.round(total/real.length);
+  const maxItem=real.reduce((a,b)=>a.v>b.v?a:b);
+  const last=real[real.length-1].v, prev=real.length>1?real[real.length-2].v:null;
+  const trend=prev?Math.round((last-prev)/prev*100):null;
+  return {total,avg,max:maxItem.v,maxIdx:maxItem.i,trend};
 }
 
 function renderChart() {
   const area = document.getElementById('chartArea');
   if(!selected.length) {
-    if(chartInst) { chartInst.destroy(); chartInst=null; }
-    area.innerHTML = `<div class="empty-state"><div class="icon">📈</div>위에서 거래처를 선택해 주세요</div>`;
+    if(chartInst){chartInst.destroy();chartInst=null;}
+    area.innerHTML=`<div class="empty-state"><div class="empty-icon">📈</div>위에서 거래처를 선택해 주세요</div>`;
     return;
   }
 
-  const isSingle = selected.length === 1;
+  const isSingle = selected.length===1;
   const stats = isSingle ? getStats(DATA[selected[0]]) : null;
 
-  let statsHTML = '';
-  if(isSingle && stats) {
-    const trendCls = stats.trend > 0 ? 'up' : stats.trend < 0 ? 'down' : '';
-    const trendTxt = stats.trend !== null ? (stats.trend > 0 ? `▲${stats.trend}%` : `▼${Math.abs(stats.trend)}%`) : '-';
-    statsHTML = `<div class="stat-chips">
-      <div class="stat-chip">누계 <span>${fmtShort(stats.total)}</span></div>
-      <div class="stat-chip">월평균 <span>${fmtShort(stats.avg)}</span></div>
-      <div class="stat-chip">최고 <span>${MONTHS[stats.maxIdx]} ${fmtShort(stats.max)}</span></div>
-      <div class="stat-chip ${trendCls}">전월比 <span>${trendTxt}</span></div>
+  let statsHTML='';
+  if(isSingle&&stats){
+    const tc=stats.trend>0?'up':stats.trend<0?'down':'';
+    const tt=stats.trend!==null?(stats.trend>0?`▲${stats.trend}%`:`▼${Math.abs(stats.trend)}%`):'-';
+    statsHTML=`<div class="stat-chips">
+      <div class="stat-chip">누계 <span>${fmtS(stats.total)}</span></div>
+      <div class="stat-chip">월평균 <span>${fmtS(stats.avg)}</span></div>
+      <div class="stat-chip">최고 <span>${MONTHS[stats.maxIdx]} ${fmtS(stats.max)}</span></div>
+      <div class="stat-chip ${tc}">전월比 <span>${tt}</span></div>
     </div>`;
   }
 
-  let legendHTML = !isSingle ? `<div class="compare-legend">${selected.map((n,i)=>`
-    <div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${n}</div>`
-  ).join('')}</div>` : '';
+  const legendHTML=!isSingle?`<div class="compare-legend">${selected.map((n,i)=>`
+    <div class="legend-item"><div class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></div>${n}</div>`).join('')}</div>`:'';
 
-  area.innerHTML = `<div class="chart-card">
+  area.innerHTML=`<div class="chart-card">
     <div class="chart-header">
       <div>
-        <div class="chart-title">${isSingle ? selected[0] : '거래처 비교'}</div>
-        <div class="chart-sub">${isSingle ? '월별 매출 추이 (4월~ 입력 예정)' : selected.length+'개 거래처 비교'}</div>
+        <div class="chart-title">${isSingle?selected[0]:'거래처 비교'}</div>
+        <div class="chart-sub">${isSingle?'월별 매출 추이':selected.length+'개 거래처 비교'}</div>
       </div>
       ${statsHTML}
     </div>
-    <div class="chart-wrap"><canvas id="mainChart" role="img" aria-label="월별 매출 선그래프">월별 매출</canvas></div>
+    <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
     ${legendHTML}
   </div>`;
 
-  if(chartInst) chartInst.destroy();
-  const ctx = document.getElementById('mainChart').getContext('2d');
+  if(chartInst){chartInst.destroy();}
+  const ctx=document.getElementById('mainChart').getContext('2d');
 
-  const datasets = selected.map((n, i) => {
-    const color = COLORS[i % COLORS.length];
-    const d = DATA[n];
-    const plotData = d.map((v, idx) => idx >= 3 ? null : (v > 0 ? v : null));
+  const datasets=selected.map((n,i)=>{
+    const color=COLORS[i%COLORS.length];
+    const d=DATA[n];
+    const plotData=d.map(v=>v>0?v:null);
     return {
-      label: n, data: plotData,
-      borderColor: color,
-      backgroundColor: color + '18',
-      borderWidth: 2.5,
-      pointBackgroundColor: color,
-      pointBorderColor: '#fff',
-      pointBorderWidth: 2,
-      pointRadius: plotData.map(v => v !== null ? 6 : 0),
-      pointHoverRadius: 8,
-      tension: 0.35,
-      fill: isSingle,
-      spanGaps: false,
-      datalabels: {
-        display: ctx => ctx.dataset.data[ctx.dataIndex] !== null,
-        align: 'top',
-        anchor: 'end',
-        offset: 4,
-        color: color,
-        font: {
-          family: 'Noto Sans KR',
-          size: isSingle ? 12 : 10,
-          weight: '500',
-        },
-        formatter: v => v !== null ? fmtShort(v) : '',
-        backgroundColor: 'rgba(255,255,255,0.85)',
-        borderRadius: 4,
-        padding: { top: 2, bottom: 2, left: 4, right: 4 },
+      label:n, data:plotData,
+      borderColor:color,
+      backgroundColor: isSingle
+        ? ctx2=>{
+            const g=ctx2.chart.ctx.createLinearGradient(0,0,0,ctx2.chart.height);
+            g.addColorStop(0,color+'55'); g.addColorStop(1,color+'00');
+            return g;
+          }
+        : color+'18',
+      borderWidth:2.5,
+      pointBackgroundColor:color, pointBorderColor:'#0a0a0f', pointBorderWidth:2,
+      pointRadius:plotData.map(v=>v!==null?6:0),
+      pointHoverRadius:9, tension:0.4, fill:isSingle, spanGaps:false,
+      datalabels:{
+        display:ctx=>ctx.dataset.data[ctx.dataIndex]!==null,
+        align:'top', anchor:'end', offset:5,
+        color:color,
+        font:{family:'Noto Sans KR',size:isSingle?12:10,weight:'700'},
+        formatter:v=>v!==null?fmtS(v):'',
+        backgroundColor:'rgba(10,10,15,0.75)',
+        borderColor:color+'60', borderWidth:1,
+        borderRadius:5,
+        padding:{top:3,bottom:3,left:6,right:6},
       }
     };
   });
 
-  chartInst = new Chart(ctx, {
-    type: 'line',
-    data: { labels: MONTHS, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: { padding: { top: 36, left: 8, right: 8, bottom: 4 } },
-      plugins: {
-        legend: { display: false },
-        datalabels: {},
-        tooltip: {
-          backgroundColor: '#1a1916',
-          titleColor: '#a8a59e',
-          bodyColor: '#ffffff',
-          padding: 10,
-          cornerRadius: 8,
-          callbacks: {
-            title: items => items[0].label,
-            label: item => {
-              const v = item.raw;
-              if(v === null || v === undefined) return ` ${item.dataset.label}: 미입력`;
+  chartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels:MONTHS,datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      animation:{ duration:800, easing:'easeInOutQuart' },
+      layout:{padding:{top:40,left:8,right:8,bottom:4}},
+      plugins:{
+        legend:{display:false},
+        datalabels:{},
+        tooltip:{
+          backgroundColor:'#1e1e2a', titleColor:'#9090a8', bodyColor:'#f0f0f5',
+          borderColor:'#2a2a3a', borderWidth:1,
+          padding:12, cornerRadius:10,
+          callbacks:{
+            title:items=>items[0].label,
+            label:item=>{
+              const v=item.raw;
+              if(v===null||v===undefined) return ` ${item.dataset.label}: 미입력`;
               return ` ${item.dataset.label}: ${fmt(v)}원`;
             }
           }
         }
       },
-      scales: {
-        x: {
-          grid: { color: '#e8e6e030' },
-          ticks: {
-            font: { family: 'Noto Sans KR', size: 12 },
-            color: '#6b6860',
-            autoSkip: false,
-            maxRotation: 0
-          }
+      scales:{
+        x:{
+          grid:{color:'rgba(255,255,255,0.04)'},
+          ticks:{font:{family:'Noto Sans KR',size:12},color:'#555568',autoSkip:false,maxRotation:0}
         },
-        y: {
-          grid: { color: '#e8e6e060' },
-          beginAtZero: true,
-          ticks: {
-            font: { family: 'Noto Sans KR', size: 11 },
-            color: '#6b6860',
-            callback: v => v >= 1000000 ? (v/1000000).toFixed(0)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v
+        y:{
+          grid:{color:'rgba(255,255,255,0.04)'}, beginAtZero:true,
+          ticks:{
+            font:{family:'Noto Sans KR',size:11},color:'#555568',
+            callback:v=>v>=1000000?(v/1000000).toFixed(0)+'M':v>=1000?(v/1000).toFixed(0)+'K':v
           }
         }
       },
-      interaction: { mode: 'index', intersect: false },
+      interaction:{mode:'index',intersect:false},
     }
   });
 }
 
-buildChips();
+(async()=>{
+  try {
+    DATA=await fetchNotionData();
+    buildUI();
+  } catch(e) {
+    document.getElementById('app').innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+        <div class="error-state">
+          ❌ 데이터 불러오기 실패<br><br>
+          <small style="color:rgba(248,113,113,0.7)">${e.message}</small><br><br>
+          <button onclick="location.reload()" style="margin-top:12px;padding:9px 20px;border-radius:8px;border:1px solid rgba(248,113,113,0.4);background:rgba(248,113,113,0.1);color:#f87171;cursor:pointer;font-family:inherit;font-size:13px;">다시 시도</button>
+        </div>
+      </div>`;
+  }
+})();
 </script>
 </body>
 </html>
