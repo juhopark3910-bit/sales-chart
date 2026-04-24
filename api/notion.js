@@ -27,9 +27,7 @@ export default async function handler(req, res) {
         body: JSON.stringify(body),
       });
 
-      if (!response.ok) {
-        throw new Error(`Notion API 오류: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Notion API 오류: ${response.status}`);
 
       const data = await response.json();
       allResults = allResults.concat(data.results);
@@ -46,7 +44,8 @@ export default async function handler(req, res) {
       const name = nameArr.map(t => t.plain_text).join('').trim();
       if (!name) continue;
 
-      parsed[name] = MONTH_KEYS.map(key => {
+      // 월별 매출 데이터
+      const months = MONTH_KEYS.map(key => {
         const prop = props[key];
         if (!prop) return 0;
         if (prop.type === 'number') return prop.number || 0;
@@ -56,6 +55,20 @@ export default async function handler(req, res) {
         }
         return 0;
       });
+
+      // 디지털헬스케어 태그
+      const dhProp = props['디지털헬스케어'];
+      let tags = [];
+      if (dhProp) {
+        if (dhProp.type === 'multi_select') {
+          tags = dhProp.multi_select?.map(s => s.name) || [];
+        } else if (dhProp.type === 'rich_text') {
+          const txt = dhProp.rich_text?.map(t => t.plain_text).join('').trim();
+          if (txt) tags = txt.split(',').map(t => t.trim()).filter(Boolean);
+        }
+      }
+
+      parsed[name] = { months, tags };
     }
 
     res.status(200).json(parsed);
