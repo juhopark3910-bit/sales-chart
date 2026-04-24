@@ -51,17 +51,17 @@
   .ctrl-btn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
   .ctrl-btn.danger:hover { border-color: var(--red); color: var(--red); }
 
-  .right-panel { flex: 1; display: flex; flex-direction: column; padding: 10px 14px; overflow: hidden; gap: 6px; }
+  .right-panel { flex: 1; display: flex; flex-direction: column; padding: 14px 18px; overflow: hidden; gap: 10px; }
 
   .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--text3); font-size: 13px; }
 
-  .chart-title { font-size: 19px; font-weight: 700; letter-spacing: -0.5px; }
+  .chart-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
   .chart-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
 
-  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; flex-shrink: 0; }
-  .sc { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
-  .sc-label { font-size: 9px; color: var(--text3); }
-  .sc-value { font-size: 11px; font-weight: 700; color: var(--text); margin-top: 1px; }
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; flex-shrink: 0; }
+  .sc { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; }
+  .sc-label { font-size: 11px; color: var(--text3); }
+  .sc-value { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
   .sc.hi { border-color: rgba(248,113,113,0.3); }
   .sc.hi .sc-label { color: var(--red); }
   .sc.hi .sc-value { color: var(--red); }
@@ -75,10 +75,10 @@
   .sc.recent .sc-value { color: var(--accent2); }
 
   .qrow { display: flex; gap: 4px; flex-shrink: 0; }
-  .qbtn { flex: 1; padding: 5px 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 10px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; transition: all .15s; }
+  .qbtn { flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 10px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; transition: all .15s; }
   .qbtn:hover { border-color: var(--accent); color: var(--accent2); }
   .qbtn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
-  .qbtn .qamt { font-size: 9px; color: var(--text3); margin-top: 1px; }
+  .qbtn .qamt { font-size: 11px; color: var(--text3); margin-top: 1px; }
   .qbtn.active .qamt { color: var(--accent2); }
 
   .chart-wrap { flex: 1; position: relative; min-height: 0; }
@@ -137,9 +137,9 @@ const fmtW = n => {
   return n.toLocaleString('ko-KR') + '원';
 };
 const fmtWShort = n => {
-  if(n >= 100000000) return (n/100000000).toFixed(1) + '억';
-  if(n >= 10000) return Math.round(n/10000) + '만';
-  return n.toString();
+  if(n >= 100000000) return (n/100000000).toFixed(1) + '억원';
+  if(n >= 10000) return Math.round(n/10000) + '만원';
+  return n.toLocaleString('ko-KR') + '원';
 };
 
 function getStats(vals) {
