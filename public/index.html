@@ -148,14 +148,14 @@ Chart.register(ChartDataLabels);
   const TAG_COLORS = {
     '웰체크': { bg: 'rgba(59,130,246,0.2)', border: 'rgba(59,130,246,0.5)', text: '#93c5fd' },
     '옵티나': { bg: 'rgba(168,85,247,0.2)', border: 'rgba(168,85,247,0.5)', text: '#c4b5fd' },
-    'CART BP': { bg: 'rgba(251,146,60,0.2)', border: 'rgba(251,146,60,0.5)', text: '#fdba74' },
-    '더 스피로킷': { bg: 'rgba(34,197,94,0.2)', border: 'rgba(34,197,94,0.5)', text: '#86efac' },
+    'CART BP': { bg: 'rgba(34,197,94,0.2)', border: 'rgba(34,197,94,0.5)', text: '#86efac' },
+    '더 스피로킷': { bg: 'rgba(251,146,60,0.2)', border: 'rgba(251,146,60,0.5)', text: '#fdba74' },
     '모비케어': { bg: 'rgba(236,72,153,0.2)', border: 'rgba(236,72,153,0.5)', text: '#f9a8d4' },
   };
   function getTagHTML(tags) {
     return tags.map(t => {
       const c = TAG_COLORS[t] || { bg:'rgba(255,255,255,0.1)', border:'rgba(255,255,255,0.3)', text:'#e0e0e0' };
-      return \`<span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;color:\${c.text};background:\${c.bg};border:1px solid \${c.border};margin-left:6px">\${t}</span>\`;
+      return `<span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;color:${c.text};background:${c.bg};border:1px solid ${c.border};margin-left:6px">${t}</span>`;
     }).join('');
   }
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
