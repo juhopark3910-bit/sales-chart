@@ -19,11 +19,11 @@
   body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
   body::before { content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(ellipse, rgba(99,102,241,0.1) 0%, transparent 70%); pointer-events: none; z-index: 0; }
 
-  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; position: relative; z-index: 1; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; position: relative; z-index: 1; }
   .top-left { display: flex; align-items: center; gap: 12px; }
   .badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 3px 10px; font-size: 11px; color: var(--accent2); font-weight: 500; }
   .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-  .top-title { font-size: 15px; font-weight: 700; letter-spacing: -0.4px; }
+  .top-title { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; }
   .refresh-btn { display: flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface); font-family: inherit; font-size: 11px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .2s; }
   .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
   .refresh-btn.loading svg { animation: spin .7s linear infinite; }
@@ -31,18 +31,18 @@
 
   .main { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
 
-  .left-panel { width: 240px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 12px; gap: 8px; overflow: hidden; }
-  .panel-meta { font-size: 12px; color: var(--text3); }
+  .left-panel { width: 280px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 14px; gap: 10px; overflow: hidden; }
+  .panel-meta { font-size: 13px; color: var(--text3); }
   .panel-meta b { color: var(--accent2); }
   .search-wrap { position: relative; }
   .search-wrap svg { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text3); }
-  #searchInput { width: 100%; padding: 8px 10px 8px 30px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); font-family: inherit; font-size: 13px; color: var(--text); outline: none; transition: all .2s; }
+  #searchInput { width: 100%; padding: 8px 10px 8px 30px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); font-family: inherit; font-size: 14px; color: var(--text); outline: none; transition: all .2s; }
   #searchInput:focus { border-color: var(--accent); }
   #searchInput::placeholder { color: var(--text3); }
   .chip-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
   .chip-list::-webkit-scrollbar { width: 2px; }
   .chip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-  .chip { padding: 8px 10px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: transparent; transition: all .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; }
+  .chip { padding: 9px 12px; border-radius: 7px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: transparent; transition: all .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; }
   .chip:hover { background: var(--surface2); color: var(--text); }
   .chip.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
   .ctrl-row { display: flex; gap: 5px; flex-shrink: 0; }
@@ -51,17 +51,17 @@
   .ctrl-btn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
   .ctrl-btn.danger:hover { border-color: var(--red); color: var(--red); }
 
-  .right-panel { flex: 1; display: flex; flex-direction: column; padding: 14px 18px; overflow: hidden; gap: 10px; }
+  .right-panel { flex: 1; display: flex; flex-direction: column; padding: 16px 20px; overflow: hidden; gap: 12px; }
 
   .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--text3); font-size: 13px; }
 
-  .chart-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-  .chart-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+  .chart-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .chart-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
 
   .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; flex-shrink: 0; }
-  .sc { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; }
-  .sc-label { font-size: 11px; color: var(--text3); }
-  .sc-value { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
+  .sc { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
+  .sc-label { font-size: 12px; color: var(--text3); }
+  .sc-value { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 3px; }
   .sc.hi { border-color: rgba(248,113,113,0.3); }
   .sc.hi .sc-label { color: var(--red); }
   .sc.hi .sc-value { color: var(--red); }
@@ -75,7 +75,7 @@
   .sc.recent .sc-value { color: var(--accent2); }
 
   .qrow { display: flex; gap: 4px; flex-shrink: 0; }
-  .qbtn { flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 10px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; transition: all .15s; }
+  .qbtn { flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text2); text-align: center; cursor: pointer; transition: all .15s; }
   .qbtn:hover { border-color: var(--accent); color: var(--accent2); }
   .qbtn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
   .qbtn .qamt { font-size: 11px; color: var(--text3); margin-top: 1px; }
@@ -331,7 +331,7 @@ function renderChart() {
     options: {
       responsive: true, maintainAspectRatio: false,
       animation: { duration: 600, easing: 'easeInOutQuart' },
-      layout: { padding: { top: 32, left: 4, right: 4, bottom: 2 } },
+      layout: { padding: { top: 36, left: 8, right: 8, bottom: 4 } },
       plugins: {
         legend: { display: false },
         datalabels: {},
