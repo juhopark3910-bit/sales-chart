@@ -80,7 +80,7 @@
   .chart-sub { font-size: 14px; color: var(--text3); margin-top: 1px; }
 
   .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; flex-shrink: 0; }
-  .sc { background: linear-gradient(135deg, var(--surface2), #16161f); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; transition: all .25s; cursor: default; }
+  .sc { background: linear-gradient(135deg, var(--surface2), #16161f); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; transition: all .25s; cursor: default; animation: borderGlow 3s ease-in-out infinite; }
   .sc:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(99,102,241,0.12); }
   .sc-label { font-size: 14px; color: var(--text2); }
   .sc-value { font-size: 17px; font-weight: 700; color: var(--text); margin-top: 5px; }
@@ -284,10 +284,10 @@ function renderChart() {
     const trendAmtTxt = stats.trendAmt!==null?(isUp?`+ ${fmtW(stats.trendAmt)}`:`- ${fmtW(Math.abs(stats.trendAmt))}`):'-';
     const trendColor = isUp?'var(--red)':isDown?'var(--blue)':'var(--text)';
     statsHTML = `<div class="stats">
-      <div class="sc"><div class="sc-label">월평균 매출</div><div class="sc-value">${fmtW(stats.avg)}</div></div>
+      <div class="sc" style="border-color:rgba(255,255,255,0.25)"><div class="sc-label">월평균 매출</div><div class="sc-value">${fmtW(stats.avg)}</div></div>
       <div class="sc hi"><div class="sc-label">최고매출</div><div class="sc-value">${MONTHS[stats.maxItem.i]} ${fmtW(stats.maxItem.v)}</div></div>
       <div class="sc lo"><div class="sc-label">최저매출</div><div class="sc-value">${MONTHS[stats.minItem.i]} ${fmtW(stats.minItem.v)}</div></div>
-      <div class="sc"><div class="sc-label">전월比</div><div class="sc-value" style="color:${trendColor}">${trendPct} <span style="font-size:12px;font-weight:400;opacity:0.85">/ ${trendAmtTxt}</span></div></div>
+      <div class="sc" style="border-color:rgba(255,255,255,0.25)"><div class="sc-label">전월比</div><div class="sc-value" style="color:${trendColor}">${trendPct} <span style="font-size:12px;font-weight:400;opacity:0.85">/ ${trendAmtTxt}</span></div></div>
       <div class="sc recent"><div class="sc-label">최근 매출 현황</div><div class="sc-value">${MONTHS[stats.last.i]} ${fmtW(stats.last.v)}</div></div>
     </div>`;
     qrowHTML = `<div class="qrow" id="qrow">
