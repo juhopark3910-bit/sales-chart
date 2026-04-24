@@ -155,7 +155,7 @@ Chart.register(ChartDataLabels);
   function getTagHTML(tags) {
     return tags.map(t => {
       const c = TAG_COLORS[t] || { bg:'rgba(255,255,255,0.1)', border:'rgba(255,255,255,0.3)', text:'#e0e0e0' };
-      return `<span style="display:inline-flex;align-items:center;padding:5px 14px;border-radius:20px;font-size:14px;font-weight:700;color:${c.text};background:${c.bg};border:1px solid ${c.border};animation:borderGlow 2.5s ease-in-out infinite;letter-spacing:0.3px;vertical-align:middle">${t}</span>`;
+      return `<span style="display:inline-flex;align-items:center;padding:4px 14px;border-radius:20px;font-size:16px;font-weight:700;color:${c.text};background:${c.bg};border:1px solid ${c.border};animation:borderGlow 2.5s ease-in-out infinite;letter-spacing:0.3px;line-height:1;align-self:center">${t}</span>`;
     }).join('');
   }
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
@@ -312,7 +312,7 @@ function renderChart() {
 
   panel.innerHTML = `
     <div style="animation:fadeIn .3s ease">
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;line-height:1">
         <div class="chart-title">${isSingle ? selected[0] : '거래처 비교'}</div><span style="display:inline-block;width:12px"></span>${titleTags}
       </div>
       <div class="chart-sub">${isSingle ? '월별 매출 추이' : selected.length+'개 거래처 비교'}</div>
