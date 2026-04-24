@@ -31,22 +31,22 @@
 
   .main { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
 
-  .left-panel { width: 200px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 8px; gap: 5px; overflow: hidden; }
-  .panel-meta { font-size: 10px; color: var(--text3); }
+  .left-panel { width: 240px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 12px; gap: 8px; overflow: hidden; }
+  .panel-meta { font-size: 12px; color: var(--text3); }
   .panel-meta b { color: var(--accent2); }
   .search-wrap { position: relative; }
   .search-wrap svg { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text3); }
-  #searchInput { width: 100%; padding: 5px 7px 5px 26px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); font-family: inherit; font-size: 12px; color: var(--text); outline: none; transition: all .2s; }
+  #searchInput { width: 100%; padding: 8px 10px 8px 30px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); font-family: inherit; font-size: 13px; color: var(--text); outline: none; transition: all .2s; }
   #searchInput:focus { border-color: var(--accent); }
   #searchInput::placeholder { color: var(--text3); }
   .chip-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
   .chip-list::-webkit-scrollbar { width: 2px; }
   .chip-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-  .chip { padding: 6px 9px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: transparent; transition: all .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; }
+  .chip { padding: 8px 10px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: transparent; transition: all .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; }
   .chip:hover { background: var(--surface2); color: var(--text); }
   .chip.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
-  .ctrl-row { display: flex; gap: 3px; flex-shrink: 0; }
-  .ctrl-btn { flex: 1; padding: 4px; border-radius: 5px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 9px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .15s; text-align: center; }
+  .ctrl-row { display: flex; gap: 5px; flex-shrink: 0; }
+  .ctrl-btn { flex: 1; padding: 7px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .15s; text-align: center; }
   .ctrl-btn:hover { border-color: var(--accent); color: var(--accent2); }
   .ctrl-btn.active { background: rgba(99,102,241,0.15); color: var(--accent2); border-color: rgba(99,102,241,0.3); }
   .ctrl-btn.danger:hover { border-color: var(--red); color: var(--red); }
@@ -357,7 +357,7 @@ function renderChart() {
           grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true,
           ticks: {
             font: {family:'Noto Sans KR',size:9}, color:'#555568',
-            callback: v => v>=10000 ? Math.round(v/10000).toLocaleString()+'만' : v.toLocaleString()
+            callback: v => v>=10000 ? Math.round(v/10000).toLocaleString()+'만원' : v.toLocaleString()+'원'
           }
         }
       },
